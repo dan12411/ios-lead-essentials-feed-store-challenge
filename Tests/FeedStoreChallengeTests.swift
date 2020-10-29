@@ -21,21 +21,25 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 
     class InMemoryFeedStore: FeedStore {
 
-        private var feed = [LocalFeedImage]()
-        private var timestamp = Date()
+        typealias Cache = (feed: [LocalFeedImage], timestamp: Date)
+
+        private var cache: Cache?
 
         func deleteCachedFeed(completion: @escaping DeletionCompletion) {
 
         }
 
         func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
-            self.feed = feed
-            self.timestamp = timestamp
+            cache = (feed, timestamp)
             completion(nil)
         }
 
         func retrieve(completion: @escaping RetrievalCompletion) {
-            feed.isEmpty ? completion(.empty) : completion(.found(feed: feed, timestamp: timestamp))
+            if let cache = cache {
+                completion(.found(feed: cache.feed, timestamp: cache.timestamp))
+            } else {
+                completion(.empty)
+            }
         }
     }
 
