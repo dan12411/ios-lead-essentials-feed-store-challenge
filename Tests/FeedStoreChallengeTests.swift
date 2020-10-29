@@ -19,38 +19,6 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
     //
     //  ***********************
 
-    class InMemoryFeedStore: FeedStore {
-
-        typealias Cache = (feed: [LocalFeedImage], timestamp: Date)
-
-        private var cache: Cache?
-        private let queue = DispatchQueue(label: "\(InMemoryFeedStore.self)Queue", qos: .userInitiated, attributes: .concurrent)
-
-        func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-            queue.async(flags: .barrier) {
-                self.cache = nil
-                completion(nil)
-            }
-        }
-
-        func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
-            queue.async(flags: .barrier) {
-                self.cache = (feed, timestamp)
-                completion(nil)
-            }
-        }
-
-        func retrieve(completion: @escaping RetrievalCompletion) {
-            queue.async {
-                if let cache = self.cache {
-                    completion(.found(feed: cache.feed, timestamp: cache.timestamp))
-                } else {
-                    completion(.empty)
-                }
-            }
-        }
-    }
-
 	func test_retrieve_deliversEmptyOnEmptyCache() {
 		let sut = makeSUT()
 
