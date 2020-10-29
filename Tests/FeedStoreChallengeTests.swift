@@ -24,22 +24,29 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
         typealias Cache = (feed: [LocalFeedImage], timestamp: Date)
 
         private var cache: Cache?
+        private let queue = DispatchQueue(label: "\(InMemoryFeedStore.self)Queue", qos: .userInitiated, attributes: .concurrent)
 
         func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-            cache = nil
-            completion(nil)
+            queue.async(flags: .barrier) {
+                self.cache = nil
+                completion(nil)
+            }
         }
 
         func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
-            cache = (feed, timestamp)
-            completion(nil)
+            queue.async(flags: .barrier) {
+                self.cache = (feed, timestamp)
+                completion(nil)
+            }
         }
 
         func retrieve(completion: @escaping RetrievalCompletion) {
-            if let cache = cache {
-                completion(.found(feed: cache.feed, timestamp: cache.timestamp))
-            } else {
-                completion(.empty)
+            queue.async {
+                if let cache = self.cache {
+                    completion(.found(feed: cache.feed, timestamp: cache.timestamp))
+                } else {
+                    completion(.empty)
+                }
             }
         }
     }
@@ -111,9 +118,9 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	}
 
 	func test_storeSideEffects_runSerially() {
-//		let sut = makeSUT()
-//
-//		assertThatSideEffectsRunSerially(on: sut)
+		let sut = makeSUT()
+
+		assertThatSideEffectsRunSerially(on: sut)
 	}
 	
 	// - MARK: Helpers
