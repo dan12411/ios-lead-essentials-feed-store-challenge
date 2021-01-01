@@ -4,6 +4,7 @@
 
 import XCTest
 import FeedStoreChallenge
+import RealmSwift
 
 class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	
@@ -32,9 +33,9 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	}
 	
 	func test_retrieve_deliversFoundValuesOnNonEmptyCache() {
-		//		let sut = makeSUT()
-		//
-		//		assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on: sut)
+		let sut = makeSUT()
+
+		assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on: sut)
 	}
 	
 	func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
@@ -94,7 +95,7 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	// - MARK: Helpers
 	
 	private func makeSUT() -> FeedStore {
-		return RealmFeedStore()
+		return try! RealmFeedStore(configuration: Realm.Configuration(inMemoryIdentifier: "\(type(of: self))"))
 	}
 	
 }
