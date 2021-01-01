@@ -2,13 +2,13 @@ import Foundation
 import RealmSwift
 
 class Cache: Object {
-	let items = List<Item>()
+	let items = List<ImageItem>()
 	@objc dynamic var timestamp = Date()
 }
 
-class Item: Object {
+class ImageItem: Object {
 	@objc dynamic var id = ""
-	@objc dynamic var itemDescription: String? = nil
+	@objc dynamic var imageDescription: String? = nil
 	@objc dynamic var location: String? = nil
 	@objc dynamic var urlString = ""
 
@@ -16,13 +16,13 @@ class Item: Object {
 		guard let id = UUID(uuidString: id), let url = URL(string: urlString) else {
 			return nil
 		}
-		return LocalFeedImage(id: id, description: itemDescription, location: location, url: url)
+		return LocalFeedImage(id: id, description: imageDescription, location: location, url: url)
 	}
 
 	convenience init(_ feed: LocalFeedImage) {
 		self.init()
 		id = feed.id.uuidString
-		itemDescription = feed.description
+		imageDescription = feed.description
 		location = feed.location
 		urlString = feed.url.absoluteString
 	}

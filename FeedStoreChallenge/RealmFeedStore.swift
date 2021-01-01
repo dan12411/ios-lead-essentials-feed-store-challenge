@@ -22,7 +22,7 @@ public final class RealmFeedStore: FeedStore {
 
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
 		try! realm.write {
-			let items = feed.map { Item($0) }
+			let items = feed.map { ImageItem($0) }
 			let cache = Cache()
 
 			cache.items.append(objectsIn: items)
