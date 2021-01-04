@@ -103,6 +103,11 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	private func inMemoryConfiguration() -> Realm.Configuration {
 		return Realm.Configuration(inMemoryIdentifier: "\(type(of: self))")
 	}
+
+	private func notExistStoreConfiguration() -> Realm.Configuration {
+		let configuration = Realm.Configuration(fileURL: anyURL())
+		return configuration
+	}
 }
 
 //  ***********************
@@ -113,21 +118,21 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 //
 //  ***********************
 
-//extension FeedStoreChallengeTests: FailableRetrieveFeedStoreSpecs {
+extension FeedStoreChallengeTests: FailableRetrieveFeedStoreSpecs {
+
+	func test_retrieve_deliversFailureOnRetrievalError() {
+		let sut = makeSUT(notExistStoreConfiguration())
+
+		assertThatRetrieveDeliversFailureOnRetrievalError(on: sut)
+	}
+
+	func test_retrieve_hasNoSideEffectsOnFailure() {
+//		let sut = makeSUT()
 //
-//	func test_retrieve_deliversFailureOnRetrievalError() {
-////		let sut = makeSUT()
-////
-////		assertThatRetrieveDeliversFailureOnRetrievalError(on: sut)
-//	}
-//
-//	func test_retrieve_hasNoSideEffectsOnFailure() {
-////		let sut = makeSUT()
-////
-////		assertThatRetrieveHasNoSideEffectsOnFailure(on: sut)
-//	}
-//
-//}
+//		assertThatRetrieveHasNoSideEffectsOnFailure(on: sut)
+	}
+
+}
 
 //extension FeedStoreChallengeTests: FailableInsertFeedStoreSpecs {
 //

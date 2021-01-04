@@ -35,13 +35,18 @@ public final class RealmFeedStore: FeedStore {
 	}
 
 	public func retrieve(completion: @escaping RetrievalCompletion) {
-		let realm = try! Realm(configuration: configuration)
-		let cache = realm.objects(Cache.self)
+		do {
+			let realm = try Realm(configuration: configuration)
+			let cache = realm.objects(Cache.self)
 
-		if let cache = cache.first {
-			completion(.found(feed: cache.items.compactMap(\.feed), timestamp: cache.timestamp))
-		} else {
-			completion(.empty)
+			if let cache = cache.first {
+				completion(.found(feed: cache.items.compactMap(\.feed), timestamp: cache.timestamp))
+			} else {
+				completion(.empty)
+			}
+
+		} catch {
+			completion(.failure(error))
 		}
 	}
 }
