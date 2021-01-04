@@ -10,11 +10,16 @@ public final class RealmFeedStore: FeedStore {
 	}
 
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-		let realm = try! Realm(configuration: configuration)
-		try! realm.write {
-			let cachedFeed = realm.objects(Cache.self)
-			realm.delete(cachedFeed)
-			completion(nil)
+		do {
+			let realm = try Realm(configuration: configuration)
+			try realm.write {
+				let cachedFeed = realm.objects(Cache.self)
+				realm.delete(cachedFeed)
+				completion(nil)
+			}
+
+		} catch {
+			completion(error)
 		}
 	}
 
