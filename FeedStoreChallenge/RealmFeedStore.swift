@@ -3,21 +3,14 @@ import RealmSwift
 
 public final class RealmFeedStore: FeedStore {
 
-	let realm: Realm
+	private let configuration: Realm.Configuration
 
-	enum StoreError: Error {
-		case initializationFailure
-	}
-
-	public init(configuration: Realm.Configuration) throws {
-		do {
-			realm = try Realm(configuration: configuration)
-		} catch {
-			throw StoreError.initializationFailure
-		}
+	public init(configuration: Realm.Configuration) {
+		self.configuration = configuration
 	}
 
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
+		let realm = try! Realm(configuration: configuration)
 		try! realm.write {
 			let cachedFeed = realm.objects(Cache.self)
 			realm.delete(cachedFeed)
@@ -26,6 +19,7 @@ public final class RealmFeedStore: FeedStore {
 	}
 
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
+		let realm = try! Realm(configuration: configuration)
 		try! realm.write {
 			let cachedFeed = realm.objects(Cache.self)
 			realm.delete(cachedFeed)
@@ -41,6 +35,7 @@ public final class RealmFeedStore: FeedStore {
 	}
 
 	public func retrieve(completion: @escaping RetrievalCompletion) {
+		let realm = try! Realm(configuration: configuration)
 		let cache = realm.objects(Cache.self)
 
 		if let cache = cache.first {
