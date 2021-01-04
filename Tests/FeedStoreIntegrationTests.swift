@@ -48,26 +48,26 @@ class FeedStoreIntegrationTests: XCTestCase {
 		let storeToInsert = makeSUT()
 		let storeToOverride = makeSUT()
 		let storeToLoad = makeSUT()
-		
+
 		insert((uniqueImageFeed(), Date()), to: storeToInsert)
-		
+
 		let latestFeed = uniqueImageFeed()
 		let latestTimestamp = Date()
 		insert((latestFeed, latestTimestamp), to: storeToOverride)
-		
+
 		expect(storeToLoad, toRetrieve: .found(feed: latestFeed, timestamp: latestTimestamp))
 	}
 	
 	func test_delete_deletesFeedInsertedOnAnotherInstance() {
-		//        let storeToInsert = makeSUT()
-		//        let storeToDelete = makeSUT()
-		//        let storeToLoad = makeSUT()
-		//
-		//        insert((uniqueImageFeed(), Date()), to: storeToInsert)
-		//
-		//        deleteCache(from: storeToDelete)
-		//
-		//        expect(storeToLoad, toRetrieve: .empty)
+		let storeToInsert = makeSUT()
+		let storeToDelete = makeSUT()
+		let storeToLoad = makeSUT()
+		
+		insert((uniqueImageFeed(), Date()), to: storeToInsert)
+		
+		deleteCache(from: storeToDelete)
+		
+		expect(storeToLoad, toRetrieve: .empty)
 	}
 	
 	// - MARK: Helpers
