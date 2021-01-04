@@ -94,8 +94,10 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	
 	// - MARK: Helpers
 	
-	private func makeSUT(_ configuration: Realm.Configuration? = nil) -> FeedStore {
-		return RealmFeedStore(configuration: configuration ?? inMemoryConfiguration())
+	private func makeSUT(_ configuration: Realm.Configuration? = nil, file: StaticString = #filePath, line: UInt = #line) -> FeedStore {
+		let sut = RealmFeedStore(configuration: configuration ?? inMemoryConfiguration())
+		trackForMemoryLeaks(sut, file: file, line: line)
+		return sut
 	}
 
 	private func inMemoryConfiguration() -> Realm.Configuration {
