@@ -1,16 +1,19 @@
 import Foundation
 import RealmSwift
 
-public final class RealmFeedStore: FeedStore {
+public final class RealmFeedStore {
 
 	private let configuration: Realm.Configuration
 
-	enum StoreError: Error {
-		case readOnly
-	}
-
 	public init(configuration: Realm.Configuration) {
 		self.configuration = configuration
+	}
+}
+
+extension RealmFeedStore: FeedStore {
+
+	enum StoreError: Error {
+		case readOnly
 	}
 
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
