@@ -80,14 +80,18 @@ class FeedStoreIntegrationTests: XCTestCase {
 	}
 	
 	private func setupEmptyStoreState() {
+		clearRealm()
+	}
+	
+	private func undoStoreSideEffects() {
+		clearRealm()
+	}
+
+	private func clearRealm() {
 		let realm = try! Realm()
 		try! realm.write {
 			realm.deleteAll()
 		}
-	}
-	
-	private func undoStoreSideEffects() {
-		setupEmptyStoreState()
 	}
 	
 }
