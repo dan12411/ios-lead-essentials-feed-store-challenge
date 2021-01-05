@@ -109,8 +109,14 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 		return configuration
 	}
 
-	private func readOnlyConfiguration() -> Realm.Configuration {
+	private func readOnlyMemoryConfiguration() -> Realm.Configuration {
 		var configuration = inMemoryConfiguration()
+		configuration.readOnly = true
+		return configuration
+	}
+
+	private func readOnlyStoreConfiguration() -> Realm.Configuration {
+		var configuration = Realm.Configuration()
 		configuration.readOnly = true
 		return configuration
 	}
@@ -143,15 +149,15 @@ extension FeedStoreChallengeTests: FailableRetrieveFeedStoreSpecs {
 extension FeedStoreChallengeTests: FailableInsertFeedStoreSpecs {
 
 	func test_insert_deliversErrorOnInsertionError() {
-		let sut = makeSUT(readOnlyConfiguration())
+		let sut = makeSUT(readOnlyMemoryConfiguration())
 
 		assertThatInsertDeliversErrorOnInsertionError(on: sut)
 	}
 
 	func test_insert_hasNoSideEffectsOnInsertionError() {
-//		let sut = makeSUT()
-//
-//		assertThatInsertHasNoSideEffectsOnInsertionError(on: sut)
+		let sut = makeSUT(readOnlyStoreConfiguration())
+
+		assertThatInsertHasNoSideEffectsOnInsertionError(on: sut)
 	}
 
 }
@@ -159,7 +165,7 @@ extension FeedStoreChallengeTests: FailableInsertFeedStoreSpecs {
 extension FeedStoreChallengeTests: FailableDeleteFeedStoreSpecs {
 
 	func test_delete_deliversErrorOnDeletionError() {
-		let sut = makeSUT(readOnlyConfiguration())
+		let sut = makeSUT(readOnlyMemoryConfiguration())
 
 		assertThatDeleteDeliversErrorOnDeletionError(on: sut)
 	}

@@ -5,6 +5,10 @@ public final class RealmFeedStore: FeedStore {
 
 	private let configuration: Realm.Configuration
 
+	enum StoreError: Error {
+		case readOnly
+	}
+
 	public init(configuration: Realm.Configuration) {
 		self.configuration = configuration
 	}
@@ -24,6 +28,8 @@ public final class RealmFeedStore: FeedStore {
 	}
 
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
+		if configuration.readOnly { return completion(StoreError.readOnly) }
+
 		do {
 			let realm = try Realm(configuration: configuration)
 			try realm.write {
