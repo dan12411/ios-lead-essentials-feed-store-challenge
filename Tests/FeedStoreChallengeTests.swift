@@ -171,9 +171,9 @@ extension FeedStoreChallengeTests: FailableDeleteFeedStoreSpecs {
 	}
 
 	func test_delete_hasNoSideEffectsOnDeletionError() {
-//		let sut = makeSUT()
-//
-//		assertThatDeleteHasNoSideEffectsOnDeletionError(on: sut)
+		let sut = makeSUT(readOnlyStoreConfiguration())
+
+		assertThatDeleteHasNoSideEffectsOnDeletionError(on: sut)
 	}
 
 }

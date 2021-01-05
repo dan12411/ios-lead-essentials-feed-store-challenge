@@ -14,6 +14,8 @@ public final class RealmFeedStore: FeedStore {
 	}
 
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
+		if configuration.readOnly { return completion(StoreError.readOnly) }
+
 		do {
 			let realm = try Realm(configuration: configuration)
 			try realm.write {
