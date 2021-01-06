@@ -20,11 +20,7 @@ extension RealmFeedStore: FeedStore {
 		if configuration.readOnly { return completion(StoreError.readOnly) }
 
 		do {
-			let realm = try Realm(configuration: configuration)
-			try realm.write {
-				let cachedFeed = realm.objects(Cache.self)
-				realm.delete(cachedFeed)
-			}
+			try Cache.delete(self.configuration)
 			completion(nil)
 
 		} catch {
@@ -36,21 +32,10 @@ extension RealmFeedStore: FeedStore {
 		if configuration.readOnly { return completion(StoreError.readOnly) }
 
 		do {
-			let realm = try Realm(configuration: configuration)
-
-			try realm.write {
-				let cachedFeed = realm.objects(Cache.self)
-				realm.delete(cachedFeed)
-
-				let items = feed.map { ImageItem($0) }
-				let cache = Cache()
-
-				cache.items.append(objectsIn: items)
-				cache.timestamp = timestamp
-				realm.add(cache)
-			}
+			try Cache.delete(self.configuration)
+			try Cache.insert(self.configuration, feed: feed,timestamp: timestamp)
 			completion(nil)
-			
+
 		} catch {
 			completion(error)
 		}
@@ -58,8 +43,7 @@ extension RealmFeedStore: FeedStore {
 
 	public func retrieve(completion: @escaping RetrievalCompletion) {
 		do {
-			let realm = try Realm(configuration: configuration)
-			let caches = realm.objects(Cache.self)
+			let caches = try Cache.retrieve(self.configuration)
 			guard let cache = caches.first else { return completion(.empty) }
 			completion(.found(feed: cache.items.compactMap(\.feed), timestamp: cache.timestamp))
 
