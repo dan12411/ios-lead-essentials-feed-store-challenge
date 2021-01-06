@@ -9,6 +9,20 @@ public final class RealmFeedStore {
 	public init(configuration: Realm.Configuration) {
 		self.configuration = configuration
 	}
+
+	private func performWithBarrier(_ operation: @escaping (Realm.Configuration) -> Void) {
+		dispatchQueue.async(flags: .barrier) { [weak self] in
+			guard let self = self else { return }
+			operation(self.configuration)
+		}
+	}
+
+	private func perform(_ operation: @escaping (Realm.Configuration) -> Void) {
+		dispatchQueue.async { [weak self] in
+			guard let self = self else { return }
+			operation(self.configuration)
+		}
+	}
 }
 
 extension RealmFeedStore: FeedStore {
@@ -20,9 +34,7 @@ extension RealmFeedStore: FeedStore {
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
 		if configuration.readOnly { return completion(StoreError.readOnly) }
 
-		dispatchQueue.async(flags: .barrier) { [weak self] in
-			guard let self = self else { return }
-
+		performWithBarrier { (configuration) in
 			do {
 				try Cache.delete(self.configuration)
 				completion(nil)
@@ -36,9 +48,7 @@ extension RealmFeedStore: FeedStore {
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
 		if configuration.readOnly { return completion(StoreError.readOnly) }
 
-		dispatchQueue.async(flags: .barrier) { [weak self] in
-			guard let self = self else { return }
-
+		performWithBarrier { (configuration) in
 			do {
 				try Cache.delete(self.configuration)
 				try Cache.insert(self.configuration, feed: feed,timestamp: timestamp)
@@ -51,9 +61,7 @@ extension RealmFeedStore: FeedStore {
 	}
 
 	public func retrieve(completion: @escaping RetrievalCompletion) {
-		dispatchQueue.async { [weak self] in
-			guard let self = self else { return }
-
+		perform { (configuration) in
 			do {
 				let caches = try Cache.retrieve(self.configuration)
 				guard let cache = caches.first else { return completion(.empty) }
