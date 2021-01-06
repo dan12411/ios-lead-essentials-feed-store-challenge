@@ -20,14 +20,16 @@ extension RealmFeedStore: FeedStore {
 	public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
 		if configuration.readOnly { return completion(StoreError.readOnly) }
 
-		dispatchQueue.async(flags: .barrier) {
+		dispatchQueue.async(flags: .barrier) { [weak self] in
+			guard let self = self else { return }
+
 			do {
 				let realm = try Realm(configuration: self.configuration)
 				try realm.write {
 					let cachedFeed = realm.objects(Cache.self)
 					realm.delete(cachedFeed)
-					completion(nil)
 				}
+				completion(nil)
 
 			} catch {
 				completion(error)
@@ -38,7 +40,9 @@ extension RealmFeedStore: FeedStore {
 	public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
 		if configuration.readOnly { return completion(StoreError.readOnly) }
 
-		dispatchQueue.async(flags: .barrier) {
+		dispatchQueue.async(flags: .barrier) { [weak self] in
+			guard let self = self else { return }
+
 			do {
 				let realm = try Realm(configuration: self.configuration)
 				try realm.write {
@@ -51,8 +55,8 @@ extension RealmFeedStore: FeedStore {
 					cache.items.append(objectsIn: items)
 					cache.timestamp = timestamp
 					realm.add(cache)
-					completion(nil)
 				}
+				completion(nil)
 
 			} catch {
 				completion(error)
@@ -61,7 +65,9 @@ extension RealmFeedStore: FeedStore {
 	}
 
 	public func retrieve(completion: @escaping RetrievalCompletion) {
-		dispatchQueue.async {
+		dispatchQueue.async { [weak self] in
+			guard let self = self else { return }
+
 			do {
 				let realm = try Realm(configuration: self.configuration)
 				let cache = realm.objects(Cache.self)
