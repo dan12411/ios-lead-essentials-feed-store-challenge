@@ -115,8 +115,14 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 		return configuration
 	}
 
+	private func testSpecificStoreURL() -> URL {
+		let testBundle = Bundle(for: type(of: self))
+		let filePath = testBundle.path(forResource: "default", ofType: "realm")!
+		return URL(string: filePath)!
+	}
+
 	private func readOnlyStoreConfiguration() -> Realm.Configuration {
-		var configuration = Realm.Configuration()
+		var configuration = Realm.Configuration(fileURL: testSpecificStoreURL())
 		configuration.readOnly = true
 		return configuration
 	}
