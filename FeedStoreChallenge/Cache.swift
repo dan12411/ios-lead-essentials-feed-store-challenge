@@ -4,34 +4,6 @@ import RealmSwift
 class Cache: Object {
 	let items = List<ImageItem>()
 	@objc dynamic var timestamp = Date()
-
-	static func retrieve(_ configuration: Realm.Configuration) throws -> Results<Cache> {
-		let realm = try Realm(configuration: configuration)
-		return realm.objects(Cache.self)
-	}
-
-	static func delete(_ configuration: Realm.Configuration) throws {
-		let realm = try Realm(configuration: configuration)
-		let cachedFeed = realm.objects(self)
-
-		try realm.write {
-			realm.delete(cachedFeed)
-		}
-	}
-
-	static func insert(_ configuration: Realm.Configuration, feed: [LocalFeedImage], timestamp: Date) throws {
-		let realm = try Realm(configuration: configuration)
-
-		try realm.write {
-			let items = feed.map { ImageItem($0) }
-			let cache = Cache()
-
-			cache.items.append(objectsIn: items)
-			cache.timestamp = timestamp
-			realm.add(cache)
-		}
-	}
-
 }
 
 class ImageItem: Object {
